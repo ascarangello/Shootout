@@ -13,7 +13,7 @@ public class playerController : MonoBehaviour {
     public int speed;
     public int goalieSpeed;
     public Slider chargeSlider;
-    bool shotOnce;
+    public static bool shotOnce;
 	// Use this for initialization
 	void Start () {
         shotOnce = false;
@@ -68,6 +68,19 @@ public class playerController : MonoBehaviour {
             if (!shotOnce)
             {
                 chargeSlider.value += Time.deltaTime;
+                if(chargeSlider.value == 2)
+                {
+                    displayPuck.SetActive(false);
+                    GameObject shot;
+                    Vector3 inFront = new Vector3(transform.position.x, transform.position.y + .1f, transform.position.z);
+                    Vector3 forceDir = (mousePos - player.transform.position).normalized;
+                    shot = Instantiate(puck, player.transform.position + forceDir, transform.rotation);
+                    Rigidbody2D shotRB = shot.GetComponent<Rigidbody2D>();
+                    shotRB.velocity = player.velocity;
+                    shotRB.AddForce(forceDir * (20 * chargeSlider.value), ForceMode2D.Impulse);
+                    chargeSlider.value = 1;
+                    shotOnce = true;
+                }
             }
         }
         if(Input.GetMouseButtonUp(0))
